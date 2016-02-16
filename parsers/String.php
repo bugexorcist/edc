@@ -3,7 +3,7 @@ namespace EasyDomainChange\Parsers;
 
 class String implements \EasyDomainChange\Parser {
     
-    protected static $priority = 999;
+    protected $priority = 999;
     
     public static function test(\string $data) {
         
@@ -21,8 +21,8 @@ class String implements \EasyDomainChange\Parser {
         
     }
     
-    public static function getPriority() {
-        return self::$priority;
+    public function getPriority() {
+        return $this->priority;
     }
     
 }

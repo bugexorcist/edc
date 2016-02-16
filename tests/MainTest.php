@@ -11,10 +11,14 @@ class MainTest extends PHPUnit_Framework_TestCase {
 
     public function test_GetParsers() {
         $parsers = $this->main->getParsers();
+        
         $this->assertEquals(3, count($parsers), 'Incorrect number of parsers');
+        
         foreach($parsers as $p) {
             $this->assertTrue(is_a($p, 'EasyDomainChange\Parser'), 'Invalid parser object');
         }
+        
+        $this->assertTrue(is_a($parsers[0], 'EasyDomainChange\Parsers\Serialized'), 'Incorrect order');
     }
 
 }

@@ -153,8 +153,8 @@ class Main {
             $parsers[] = new $className;
         }
         
-        usort($parsers, function($parser1, $parser2){
-            return ($parser1->getPriority() > $parser2->getPriority());
+        usort($parsers, function($a, $b){
+            return ($a->getPriority() > $b->getPriority());
         });
         
         return $parsers;

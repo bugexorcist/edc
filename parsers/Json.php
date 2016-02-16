@@ -3,7 +3,7 @@ namespace EasyDomainChange\Parsers;
 
 class Json extends String implements \EasyDomainChange\Parser {
     
-    protected static $priority = 2;
+    protected $priority = 2;
     
     public static function test(\string $data) {
         

@@ -3,7 +3,7 @@ namespace EasyDomainChange\Parsers;
 
 class Serialized extends String implements \EasyDomainChange\Parser{
     
-    protected static $priority = 1;
+    protected $priority = 1;
     
     public static function test(\string $data) {
         
