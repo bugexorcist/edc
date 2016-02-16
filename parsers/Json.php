@@ -1,13 +1,15 @@
 <?php
-namespace EasyDomainChange;
+namespace EasyDomainChange\Parsers;
 
-class Json implements Parser {
+class Json extends String implements \EasyDomainChange\Parser {
     
-    public static function test(string $data) {
+    protected static $priority = 2;
+    
+    public static function test(\string $data) {
         
     }
     
-    public static function unpack(string $data) {
+    public static function unpack(\string $data) {
         
     }
     
@@ -15,7 +17,7 @@ class Json implements Parser {
         
     }
     
-    public static function process(string $data){
+    public static function process(\string $data){
         
     }
     

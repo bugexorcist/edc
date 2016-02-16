@@ -13,14 +13,18 @@
 
 namespace EasyDomainChange;
 
+if(is_readable(__DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php')) {
+    include_once __DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
+}
+
 /**
- * 
+ * Default parser interface
  */
 interface Parser {
-    public static function test(string $data);
-    public static function unpack(string $data);
+    public static function test(\string $data);
+    public static function unpack(\string $data);
     public static function pack($data);
-    public static function process(string $data);
+    public static function process(\string $data);
 }
 
 /**
@@ -35,14 +39,18 @@ class Main {
      */
     private static $errors = 0;
     
+    private static $parsers = array();
+    
     /**
      * Sets the necessary WordPress hooks up
      */
     public static function setup() {
-        add_action('admin_enqueue_scripts', function(){
-            wp_enqueue_script('easy_domain_change_js', plugin_dir_url(__FILE__) . 'assets/js/manage.js', array(), false, true);
-        });
-        add_action('admin_menu', array(__NAMESPACE__ . '\Main', 'adminMenu'));
+        if(function_exists('add_action')) {
+            add_action('admin_enqueue_scripts', function(){
+                wp_enqueue_script('easy_domain_change_js', plugin_dir_url(__FILE__) . 'assets/js/manage.js', array(), false, true);
+            });
+            add_action('admin_menu', array(__NAMESPACE__ . '\Main', 'adminMenu'));
+        }
     }
     
     /**
@@ -116,6 +124,7 @@ class Main {
      * @param string $newDomain
      */
     public static function process($oldDomain, $newDomain) {
+        self::setupParsers();
         /**
          * @todo Retrieve all options
          * @todo Process all nested options
@@ -123,6 +132,36 @@ class Main {
          * @todo Process all posts
          */
         exit;
+    }
+    
+    public static function setupParsers() {
+        self::$parsers = self::getParsers();
+    }
+    
+    /**
+     * Retrieves all available parser objects
+     * 
+     * @return \EasyDomainChange\className
+     */
+    public static function getParsers() {
+        
+        $parsers = array();
+        
+        foreach(glob(__DIR__ . DIRECTORY_SEPARATOR . 'parsers' . DIRECTORY_SEPARATOR . '*.php') as $parserFile) {
+            require_once $parserFile;
+            $className = '\EasyDomainChange\Parsers\\' . explode('.',basename($parserFile))[0];
+            $parsers[] = new $className;
+        }
+        
+        usort($parsers, function($parser1, $parser2){
+            return ($parser1->getPriority() > $parser2->getPriority());
+        });
+        
+        return $parsers;
+    }
+    
+    public static function processItem($oldDomain, $newDomain, $data) {
+        
     }
 
 }
