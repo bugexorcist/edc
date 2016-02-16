@@ -21,10 +21,10 @@ if(is_readable(__DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 
  * Default parser interface
  */
 interface Parser {
-    public static function test(\string $data);
-    public static function unpack(\string $data);
+    public static function test($data);
+    public static function unpack($data);
     public static function pack($data);
-    public static function process(\string $data);
+    public static function process($data);
 }
 
 /**

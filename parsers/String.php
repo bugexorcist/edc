@@ -5,11 +5,11 @@ class String implements \EasyDomainChange\Parser {
     
     protected $priority = 999;
     
-    public static function test(\string $data) {
+    public static function test($data) {
         
     }
     
-    public static function unpack(\string $data) {
+    public static function unpack($data) {
         
     }
     
@@ -17,7 +17,7 @@ class String implements \EasyDomainChange\Parser {
         
     }
     
-    public static function process(\string $data){
+    public static function process($data){
         
     }
     
