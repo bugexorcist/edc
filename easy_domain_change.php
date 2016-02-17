@@ -177,7 +177,9 @@ class Main {
         foreach(glob(__DIR__ . DIRECTORY_SEPARATOR . 'parsers' . DIRECTORY_SEPARATOR . '*.php') as $parserFile) {
             require_once $parserFile;
             $className = '\EasyDomainChange\Parsers\\' . explode('.',basename($parserFile))[0];
-            $parsers[] = new $className;
+            if(class_exists($className)) {
+                $parsers[] = new $className;
+            }
         }
         
         usort($parsers, function($a, $b){
