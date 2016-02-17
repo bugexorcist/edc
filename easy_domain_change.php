@@ -103,10 +103,10 @@ class Main {
      * @return boolean
      */
     public static function validateInput() {
-        if (empty($_POST['old_domain']) || !preg_match('/^([a-zA-Z]{1,}\.)?[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}(\.[a-zA-Z]{2,})?$/', $_POST['old_domain'])) {
+        if (empty($_POST['old_domain']) || !preg_match('/^([a-zA-Z]{1,}\.)?[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}(\.[a-zA-Z\/]{2,})?$/', $_POST['old_domain'])) {
             self::renderError('Old domain must not be empty and must have valid format');  
         }
-        if (empty($_POST['new_domain']) || !preg_match('/^([a-zA-Z]{1,}\.)?[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}(\.[a-zA-Z]{2,})?$/', $_POST['new_domain'])) {
+        if (empty($_POST['new_domain']) || !preg_match('/^([a-zA-Z]{1,}\.)?[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}(\.[a-zA-Z\/]{2,})?$/', $_POST['new_domain'])) {
             self::renderError('New domain must not be empty and must have valid format');
         }
         if(self::$errors) {
