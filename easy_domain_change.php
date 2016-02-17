@@ -148,7 +148,11 @@ class Main {
         foreach(self::$processableEntities as $entity) {
             if($items = $wpdb->get_results( $wpdb->prepare( "SELECT {$entity['field']}, {$entity['key']} FROM {$wpdb->$entity['table']} WHERE {$entity['field']} LIKE %s", '%' . $oldDomain . '%' ))) {
                 foreach($items as $item) {
-                    self::processItem($item, $entity, $oldDomain, $newDomain);
+                    if(self::processItem($item, $entity, $oldDomain, $newDomain)) {
+                        self::renderMessage('`' . $entity['table'] . '`.`' . $entity['field'] . '` for ' . $entity['key'] . '=="' . $item->$entity['key'] . '" has been processed', 'notice notice-success is-dismissible');
+                    } else {
+                        self::renderError('`' . $entity['table'] . '`.`' . $entity['field'] . '` for ' . $entity['key'] . '=="' . $item->$entity['key'] . '" processing failed');
+                    }
                 }
             }
         }
