@@ -1,0 +1,1 @@
+a:2:{i:0;s:64:"/new.example.com/public_html/wp-content/themes/edental/style.css";i:2;a:3:{i:0;a:0:{}i:1;s:28:"new.example.com/public_html/";i:2;a:3:{s:1:"a";s:35:"http://new.example.com/public_html/";s:1:"b";s:49:"http://new.example.com/public_html/themes/edental";s:1:"c";a:1:{s:8:"some_var";s:35:"http://new.example.com/public_html/";}}}}

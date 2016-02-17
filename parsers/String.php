@@ -5,20 +5,25 @@ class String implements \EasyDomainChange\Parser {
     
     protected $priority = 999;
     
-    public static function test($data) {
-        
+    public function test($data) {
+        return is_string($data);
     }
     
-    public static function unpack($data) {
-        
+    public function unpack($data) {
+        return $data;
     }
     
-    public static function pack($data) {
-        
+    public function pack($data) {
+        return $data;
     }
     
-    public static function process($data){
-        
+    public function process($data, $oldDomain, $newDomain) {
+        $data = $this->unpack($data);
+        return $this->pack($this->replace($data, $oldDomain, $newDomain));
+    }
+    
+    public function replace(&$data, $oldDomain, $newDomain){
+        return str_replace($oldDomain, $newDomain, $data);
     }
     
     public function getPriority() {

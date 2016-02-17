@@ -19,6 +19,7 @@ class MainTest extends PHPUnit_Framework_TestCase {
         }
         
         $this->assertTrue(is_a($parsers[0], 'EasyDomainChange\Parsers\Serialized'), 'Incorrect order');
+        $this->assertTrue(is_a($parsers[1], 'EasyDomainChange\Parsers\Json'), 'Incorrect order');
     }
 
 }
