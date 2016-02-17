@@ -40,7 +40,24 @@ class Main {
      */
     private static $errors = 0;
     
+    /**
+     * Array of parser objects
+     * 
+     * @var array 
+     */
     private static $parsers = array();
+    
+    /**
+     * The list of tables and fields to search through and change modify values of
+     * 
+     * @var array 
+     */
+    private static $processableEntities = array(
+        array( 'table' => 'options', 'field' => 'option_value', 'key' => 'option_name'),
+        array( 'table' => 'posts', 'field' => 'post_content', 'key' => 'ID'),
+        array( 'table' => 'posts', 'field' => 'post_title', 'key' => 'ID'),
+        array( 'table' => 'posts', 'field' => 'guid', 'key' => 'ID'),
+    );
     
     /**
      * Sets the necessary WordPress hooks up
@@ -126,15 +143,20 @@ class Main {
      */
     public static function process($oldDomain, $newDomain) {
         self::setupParsers();
-        /**
-         * @todo Retrieve all options
-         * @todo Process all nested options
-         * @todo Retrieve all posts
-         * @todo Process all posts
-         */
-        exit;
+        global $wpdb;
+        $entity = self::$processableEntities[0];
+        foreach(self::$processableEntities as $entity) {
+            if($items = $wpdb->get_results( $wpdb->prepare( "SELECT {$entity['field']}, {$entity['key']} FROM {$wpdb->$entity['table']} WHERE {$entity['field']} LIKE %s", '%' . $oldDomain . '%' ))) {
+                foreach($items as $item) {
+                    self::processItem($item, $entity, $oldDomain, $newDomain);
+                }
+            }
+        }
     }
     
+    /**
+     * Retrieves available parsers and initalizes them into class var
+     */
     public static function setupParsers() {
         self::$parsers = self::getParsers();
     }
@@ -161,8 +183,28 @@ class Main {
         return $parsers;
     }
     
-    public static function processItem($oldDomain, $newDomain, $data) {
-        
+    /**
+     * Updates a single entry of table
+     * 
+     * @global \wpdb $wpdb
+     * @param \stdObject $item
+     * @param array $entity
+     * @param string $oldDomain
+     * @param string $newDomain
+     * 
+     * @return boolean
+     */
+    public static function processItem($item, $entity, $oldDomain, $newDomain) {
+        global $wpdb;
+        foreach (self::$parsers as $parser) {
+            if ($parser->test($item->$entity['field'])) {
+                $update_args = array(
+                    $entity['field'] => $parser->process($item->$entity['field'], $oldDomain, $newDomain),
+                );
+                return $wpdb->update($wpdb->$entity['table'], $update_args, array($entity['key'] => $item->$entity['key']));
+            }
+        }
+        return false;
     }
 
 }
