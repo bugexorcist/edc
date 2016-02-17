@@ -67,6 +67,7 @@ class SerializedTest extends BaseParserTest {
     
     public function test_Process() {
         $this->assertEquals(file_get_contents(__DIR__ . '/serialized_text_resulting_sample.txt'), $this->parser->process(file_get_contents(__DIR__ . '/serialized_text_sample.txt'), 'sample.domain.com', 'new.example.com'), 'Could not do replacements');
+        $this->assertNotEmpty(unserialize($this->parser->process(file_get_contents(__DIR__ . '/options.txt'), 'airports.hostigy.com', 'new.sample.demo')), 'Could not parse huge serialized string.');
     }
 
     public function test_serializedTextException() {
