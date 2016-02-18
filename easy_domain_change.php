@@ -57,6 +57,9 @@ class Main {
         array( 'table' => 'posts', 'field' => 'post_content', 'key' => 'ID'),
         array( 'table' => 'posts', 'field' => 'post_title', 'key' => 'ID'),
         array( 'table' => 'posts', 'field' => 'guid', 'key' => 'ID'),
+        array( 'table' => 'postmeta', 'field' => 'meta_value', 'key' => 'meta_id'),
+        array( 'table' => 'wp_layerslider', 'field' => 'data', 'key' => 'id'),
+        array( 'table' => 'wp_revslider_slides', 'field' => 'params', 'key' => 'id'),
     );
     
     /**
@@ -103,10 +106,10 @@ class Main {
      * @return boolean
      */
     public static function validateInput() {
-        if (empty($_POST['old_domain']) || !preg_match('/^([a-zA-Z]{1,}\.)?[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}(\.[a-zA-Z\/]{2,})?$/', $_POST['old_domain'])) {
+        if (empty($_POST['old_domain']) || !preg_match('/^([a-zA-Z\@]{1,}\.)?[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}(\.[a-zA-Z\/]{2,})?$/', $_POST['old_domain'])) {
             self::renderError('Old domain must not be empty and must have valid format');  
         }
-        if (empty($_POST['new_domain']) || !preg_match('/^([a-zA-Z]{1,}\.)?[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}(\.[a-zA-Z\/]{2,})?$/', $_POST['new_domain'])) {
+        if (empty($_POST['new_domain']) || !preg_match('/^([a-zA-Z\@]{1,}\.)?[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}(\.[a-zA-Z\/]{2,})?$/', $_POST['new_domain'])) {
             self::renderError('New domain must not be empty and must have valid format');
         }
         if(self::$errors) {
@@ -146,7 +149,9 @@ class Main {
         global $wpdb;
         $entity = self::$processableEntities[0];
         foreach(self::$processableEntities as $entity) {
-            if($items = $wpdb->get_results( $wpdb->prepare( "SELECT {$entity['field']}, {$entity['key']} FROM {$wpdb->$entity['table']} WHERE {$entity['field']} LIKE %s", '%' . $oldDomain . '%' ))) {
+            $table = property_exists($wpdb, $entity['table'])?$wpdb->$entity['table']:$entity['table'];
+            //Suppress errors in order to avoid them in case table does not exist
+            if($items = @$wpdb->get_results( @$wpdb->prepare( "SELECT {$entity['field']}, {$entity['key']} FROM $table WHERE {$entity['field']} LIKE %s", '%' . $oldDomain . '%' ))) {
                 foreach($items as $item) {
                     if(self::processItem($item, $entity, $oldDomain, $newDomain)) {
                         self::renderMessage('`' . $entity['table'] . '`.`' . $entity['field'] . '` for ' . $entity['key'] . '=="' . $item->$entity['key'] . '" has been processed', 'notice notice-success is-dismissible');
@@ -202,12 +207,13 @@ class Main {
      */
     public static function processItem($item, $entity, $oldDomain, $newDomain) {
         global $wpdb;
+        $table = property_exists($wpdb, $entity['table'])?$wpdb->$entity['table']:$entity['table'];
         foreach (self::$parsers as $parser) {
             if ($parser->test($item->$entity['field'])) {
                 $update_args = array(
                     $entity['field'] => $parser->process($item->$entity['field'], $oldDomain, $newDomain),
                 );
-                return $wpdb->update($wpdb->$entity['table'], $update_args, array($entity['key'] => $item->$entity['key']));
+                return $wpdb->update($table, $update_args, array($entity['key'] => $item->$entity['key']));
             }
         }
         return false;
