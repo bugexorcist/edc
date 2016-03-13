@@ -14,7 +14,12 @@ class Json extends Serialized implements \EasyDomainChange\Parser {
      * @return boolean
      */
     public function test($data) {
-        return preg_match('/[\"\{\:]/', $data) && !empty($this->decodedData = json_decode($data));
+        if(preg_match('/[\"\{\:]/', $data)) {
+            if(function_exists('json_decode')) {
+                $this->decodedData = json_decode($data);
+            }
+        }
+        return !empty($this->decodedData);
     }
     
     /**

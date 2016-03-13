@@ -11,7 +11,10 @@ class Serialized extends String implements \EasyDomainChange\Parser{
         if(function_exists('is_serialized')) {
             return is_serialized($data);
         }
-        return preg_match('/(a\:[0-9]{1,})?(i\:[0-9]{1,})?(s\:[0-9]{1,})?/', $data) && !empty($this->decodedData = unserialize($data));
+        if( preg_match('/(a\:[0-9]{1,})?(i\:[0-9]{1,})?(s\:[0-9]{1,})?/', $data)) {
+            $this->decodedData = unserialize($data);
+        }
+        return !empty($this->decodedData);
     }
     
     public function unpack($data, $ignoreTested = false) {
